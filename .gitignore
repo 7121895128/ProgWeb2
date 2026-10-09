@@ -1,1 +1,10 @@
+target/
+data/
+*.db
+*.mv.db
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
 .idea/
