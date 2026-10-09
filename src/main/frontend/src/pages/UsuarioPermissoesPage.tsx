@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api, { mensagemErro } from "../services/api";
 import type { Usuario } from "../types/Usuario";
 import type { Permissao } from "../types/Permissao";
 
@@ -9,26 +9,40 @@ function UsuarioPermissoesPage() {
   const [usuarioId, setUsuarioId] = useState<number | null>(null);
   const [selecionadas, setSelecionadas] = useState<number[]>([]);
   const [mensagem, setMensagem] = useState("");
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-    api.get<Usuario[]>("/usuarios").then((r) => setUsuarios(r.data));
-    api.get<Permissao[]>("/permissoes").then((r) => setPermissoes(r.data));
+    Promise.all([
+      api.get<Usuario[]>("/usuarios"),
+      api.get<Permissao[]>("/permissoes"),
+    ])
+      .then(([u, p]) => {
+        setUsuarios(u.data);
+        setPermissoes(p.data);
+      })
+      .catch((e) => setErro(mensagemErro(e)));
   }, []);
 
   async function selecionarUsuario(id: number | null) {
     setUsuarioId(id);
     setMensagem("");
+    setErro("");
 
     if (id === null) {
       setSelecionadas([]);
       return;
     }
 
-    const resposta = await api.get<Permissao[]>(`/usuarios/${id}/permissoes`);
-    setSelecionadas(resposta.data.map((p) => p.id));
+    try {
+      const resposta = await api.get<Permissao[]>(`/usuarios/${id}/permissoes`);
+      setSelecionadas(resposta.data.map((p) => p.id));
+    } catch (e) {
+      setErro(mensagemErro(e));
+    }
   }
 
-  function alternarPermissao(id: number) {
+  function alternar(id: number) {
+    setMensagem("");
     setSelecionadas((atuais) =>
       atuais.includes(id) ? atuais.filter((x) => x !== id) : [...atuais, id]
     );
@@ -37,12 +51,20 @@ function UsuarioPermissoesPage() {
   async function salvar() {
     if (usuarioId === null) return;
 
-    await api.put(`/usuarios/${usuarioId}/permissoes`, selecionadas);
-    setMensagem("Permissões salvas com sucesso!");
+    try {
+      await api.put(`/usuarios/${usuarioId}/permissoes`, selecionadas);
+      setMensagem("Permissões salvas com sucesso!");
+      setErro("");
+    } catch (e) {
+      setErro(mensagemErro(e));
+    }
   }
 
   return (
-    <div>
+    <section>
+      <h1>Permissões do usuário</h1>
+      {erro && <p style={{ color: "crimson" }}>{erro}</p>}
+
       <label>
         Usuário:{" "}
         <select
@@ -62,25 +84,25 @@ function UsuarioPermissoesPage() {
 
       {usuarioId !== null && (
         <div>
-          <h3>Permissões</h3>
+          {permissoes.length === 0 && <p>Nenhuma permissão cadastrada.</p>}
           {permissoes.map((permissao) => (
             <div key={permissao.id}>
               <label>
                 <input
                   type="checkbox"
                   checked={selecionadas.includes(permissao.id)}
-                  onChange={() => alternarPermissao(permissao.id)}
+                  onChange={() => alternar(permissao.id)}
                 />{" "}
-                {permissao.nome} — {permissao.descricao}
+                <strong>{permissao.nome}</strong> — {permissao.descricao}
               </label>
             </div>
           ))}
 
           <button onClick={salvar}>Salvar permissões</button>
-          {mensagem && <p>{mensagem}</p>}
+          {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 

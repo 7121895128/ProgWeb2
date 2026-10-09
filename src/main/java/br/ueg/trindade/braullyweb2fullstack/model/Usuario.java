@@ -1,10 +1,17 @@
 package br.ueg.trindade.braullyweb2fullstack.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Usuario {
@@ -22,6 +29,14 @@ public class Usuario {
 
     private String email;
 
+    // Lado dono do relacionamento N:N: gera a tabela usuario_permissao
+    @ManyToMany
+    @JoinTable(
+            name = "usuario_permissao",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "permissao_id"))
+    private Set<Permissao> permissoes = new HashSet<>();
+
     public Usuario() {
     }
 
@@ -35,4 +50,6 @@ public class Usuario {
     public void setSenha(String senha) { this.senha = senha; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public Set<Permissao> getPermissoes() { return permissoes; }
+    public void setPermissoes(Set<Permissao> permissoes) { this.permissoes = permissoes; }
 }

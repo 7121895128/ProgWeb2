@@ -3,6 +3,7 @@ package br.ueg.trindade.braullyweb2fullstack.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.ueg.trindade.braullyweb2fullstack.exception.RecursoNaoEncontradoException;
 import br.ueg.trindade.braullyweb2fullstack.exception.RegraNegocioException;
@@ -41,9 +42,12 @@ public class PermissaoService {
         return repository.save(permissao);
     }
 
+    @Transactional
     public void excluir(Long id) {
-        buscar(id);
-        repository.deleteById(id);
+        Permissao permissao = buscar(id);
+        // Usuario é o lado dono do N:N: remove os vínculos antes, senão a FK de usuario_permissao bloqueia a exclusão
+        permissao.getUsuarios().forEach(usuario -> usuario.getPermissoes().remove(permissao));
+        repository.delete(permissao);
     }
 
     // Regra de negócio: nome obrigatório e único

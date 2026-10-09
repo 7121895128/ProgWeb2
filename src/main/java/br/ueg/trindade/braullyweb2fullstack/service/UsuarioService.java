@@ -1,23 +1,32 @@
 package br.ueg.trindade.braullyweb2fullstack.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.ueg.trindade.braullyweb2fullstack.exception.RecursoNaoEncontradoException;
 import br.ueg.trindade.braullyweb2fullstack.exception.RegraNegocioException;
+import br.ueg.trindade.braullyweb2fullstack.model.Permissao;
 import br.ueg.trindade.braullyweb2fullstack.model.Usuario;
+import br.ueg.trindade.braullyweb2fullstack.repository.PermissaoRepository;
 import br.ueg.trindade.braullyweb2fullstack.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final PermissaoRepository permissaoRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository repository,
+                          PermissaoRepository permissaoRepository,
+                          PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.permissaoRepository = permissaoRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -58,6 +67,30 @@ public class UsuarioService {
     public void excluir(Long id) {
         buscar(id);
         repository.deleteById(id);
+    }
+
+    // N:N — permissões atuais do usuário
+    @Transactional(readOnly = true)
+    public List<Permissao> buscarPermissoes(Long id) {
+        // dentro da transação para carregar a coleção LAZY
+        return List.copyOf(buscar(id).getPermissoes());
+    }
+
+    // N:N — substitui as permissões do usuário pelas informadas (lista de ids)
+    @Transactional
+    public List<Permissao> atribuirPermissoes(Long id, List<Long> idsPermissoes) {
+        Usuario usuario = buscar(id);
+
+        Set<Long> ids = new HashSet<>(idsPermissoes);
+        List<Permissao> encontradas = permissaoRepository.findAllById(ids);
+        if (encontradas.size() != ids.size()) {
+            throw new RecursoNaoEncontradoException("Alguma das permissões informadas não existe");
+        }
+
+        usuario.getPermissoes().clear();
+        usuario.getPermissoes().addAll(encontradas);
+        repository.save(usuario);
+        return encontradas;
     }
 
     private void validarCampos(Usuario u) {
