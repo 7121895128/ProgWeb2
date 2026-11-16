@@ -45,12 +45,10 @@ public class PermissaoService {
     @Transactional
     public void excluir(Long id) {
         Permissao permissao = buscar(id);
-        // Usuario é o lado dono do N:N: remove os vínculos antes, senão a FK de usuario_permissao bloqueia a exclusão
         permissao.getUsuarios().forEach(usuario -> usuario.getPermissoes().remove(permissao));
         repository.delete(permissao);
     }
 
-    // Regra de negócio: nome obrigatório e único
     private void validar(Permissao dados, Long idAtual) {
         if (dados.getNome() == null || dados.getNome().isBlank()) {
             throw new RegraNegocioException("O nome da permissão é obrigatório");

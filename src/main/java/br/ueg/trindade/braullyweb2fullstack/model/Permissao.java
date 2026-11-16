@@ -21,12 +21,16 @@ public class Permissao {
     private String nome;
     private String descricao;
 
-    // Lado inverso do N:N (quem manda é Usuario.permissoes). Fica fora do JSON para cortar a recursão.
     @ManyToMany(mappedBy = "permissoes")
     @JsonIgnore
     private Set<Usuario> usuarios = new HashSet<>();
 
     public Permissao() {
+    }
+
+    public Permissao(String nome, String descricao) {
+        this.nome = nome;
+        this.descricao = descricao;
     }
 
     public Long getId() { return id; }

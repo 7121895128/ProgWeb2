@@ -2,6 +2,7 @@ package br.ueg.trindade.braullyweb2fullstack.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import br.ueg.trindade.braullyweb2fullstack.service.UsuarioService;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
+@PreAuthorize("hasRole('ADMIN')")
 public class UsuarioController {
 
     private final UsuarioService service;
@@ -52,13 +54,11 @@ public class UsuarioController {
         service.excluir(id);
     }
 
-    // N:N — permissões de um usuário
     @GetMapping("/usuarios/{id}/permissoes")
     public List<Permissao> permissoesDoUsuario(@PathVariable Long id) {
         return service.buscarPermissoes(id);
     }
 
-    // N:N — substitui as permissões do usuário pela lista de ids enviada no corpo, ex.: [1, 3]
     @PutMapping("/usuarios/{id}/permissoes")
     public List<Permissao> atribuirPermissoes(@PathVariable Long id, @RequestBody List<Long> idsPermissoes) {
         return service.atribuirPermissoes(id, idsPermissoes);

@@ -23,13 +23,11 @@ public class Usuario {
     private String nome;
     private String username;
 
-    // WRITE_ONLY: a senha pode ser recebida no JSON, mas nunca é devolvida nas respostas
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
 
     private String email;
 
-    // Lado dono do relacionamento N:N: gera a tabela usuario_permissao
     @ManyToMany
     @JoinTable(
             name = "usuario_permissao",
@@ -38,6 +36,13 @@ public class Usuario {
     private Set<Permissao> permissoes = new HashSet<>();
 
     public Usuario() {
+    }
+
+    public Usuario(String nome, String username, String senha, String email) {
+        this.nome = nome;
+        this.username = username;
+        this.senha = senha;
+        this.email = email;
     }
 
     public Long getId() { return id; }

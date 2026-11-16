@@ -8,15 +8,18 @@ import org.springframework.stereotype.Service;
 import br.ueg.trindade.braullyweb2fullstack.exception.RecursoNaoEncontradoException;
 import br.ueg.trindade.braullyweb2fullstack.exception.RegraNegocioException;
 import br.ueg.trindade.braullyweb2fullstack.model.Produto;
+import br.ueg.trindade.braullyweb2fullstack.repository.PedidoRepository;
 import br.ueg.trindade.braullyweb2fullstack.repository.ProdutoRepository;
 
 @Service
 public class ProdutoService {
 
     private final ProdutoRepository repository;
+    private final PedidoRepository pedidoRepository;
 
-    public ProdutoService(ProdutoRepository repository) {
+    public ProdutoService(ProdutoRepository repository, PedidoRepository pedidoRepository) {
         this.repository = repository;
+        this.pedidoRepository = pedidoRepository;
     }
 
     public List<Produto> listar() {
@@ -46,10 +49,12 @@ public class ProdutoService {
 
     public void excluir(Long id) {
         buscar(id);
+        if (pedidoRepository.existsByProdutoId(id)) {
+            throw new RegraNegocioException("Não é possível excluir um produto que possui pedidos");
+        }
         repository.deleteById(id);
     }
 
-    // Regras de negócio: nome obrigatório, preço > 0 e estoque não negativo
     private void validar(Produto p) {
         if (p.getNome() == null || p.getNome().isBlank()) {
             throw new RegraNegocioException("O nome do produto é obrigatório");

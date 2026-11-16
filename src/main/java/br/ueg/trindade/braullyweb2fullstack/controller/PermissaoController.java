@@ -2,6 +2,7 @@ package br.ueg.trindade.braullyweb2fullstack.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import br.ueg.trindade.braullyweb2fullstack.service.PermissaoService;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
+@PreAuthorize("hasRole('ADMIN')")
 public class PermissaoController {
 
     private final PermissaoService service;

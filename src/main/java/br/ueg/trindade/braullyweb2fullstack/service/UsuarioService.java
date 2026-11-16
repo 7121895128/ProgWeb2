@@ -56,7 +56,6 @@ public class UsuarioService {
         usuario.setNome(dados.getNome());
         usuario.setUsername(dados.getUsername());
         usuario.setEmail(dados.getEmail());
-        // Senha em branco na edição = manter a senha atual
         if (dados.getSenha() != null && !dados.getSenha().isBlank()) {
             validarSenha(dados.getSenha());
             usuario.setSenha(passwordEncoder.encode(dados.getSenha()));
@@ -69,14 +68,11 @@ public class UsuarioService {
         repository.deleteById(id);
     }
 
-    // N:N — permissões atuais do usuário
     @Transactional(readOnly = true)
     public List<Permissao> buscarPermissoes(Long id) {
-        // dentro da transação para carregar a coleção LAZY
         return List.copyOf(buscar(id).getPermissoes());
     }
 
-    // N:N — substitui as permissões do usuário pelas informadas (lista de ids)
     @Transactional
     public List<Permissao> atribuirPermissoes(Long id, List<Long> idsPermissoes) {
         Usuario usuario = buscar(id);
@@ -108,7 +104,6 @@ public class UsuarioService {
         }
     }
 
-    // Regra de negócio: username não pode se repetir
     private void validarUsernameUnico(String username, Long idAtual) {
         repository.findByUsername(username).ifPresent(existente -> {
             if (!existente.getId().equals(idAtual)) {
