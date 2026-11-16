@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import api, { mensagemErro } from "../services/api";
 import type { Usuario } from "../types/Usuario";
 import type { Permissao } from "../types/Permissao";
+import Botao from "../components/Botao";
+import { avisoErro, avisoSucesso, titulo } from "../components/estilos";
 
 function UsuarioPermissoesPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -61,48 +63,50 @@ function UsuarioPermissoesPage() {
   }
 
   return (
-    <section>
-      <h1>Permissões do usuário</h1>
-      {erro && <p style={{ color: "crimson" }}>{erro}</p>}
+    <div className="rounded-lg bg-white p-6 shadow">
+      <h1 className={titulo}>Atribuir Permissões</h1>
+      {erro && <p className={avisoErro}>{erro}</p>}
+      {mensagem && <p className={avisoSucesso}>{mensagem}</p>}
 
-      <label>
-        Usuário:{" "}
-        <select
-          value={usuarioId ?? ""}
-          onChange={(e) =>
-            selecionarUsuario(e.target.value === "" ? null : Number(e.target.value))
-          }
-        >
-          <option value="">Selecione um usuário</option>
-          {usuarios.map((usuario) => (
-            <option key={usuario.id} value={usuario.id}>
-              {usuario.nome} ({usuario.username})
-            </option>
-          ))}
-        </select>
-      </label>
+      <label className="mb-1 block text-sm font-medium text-gray-700">Usuário</label>
+      <select
+        className="mb-4 w-full rounded-md border border-gray-300 px-3 py-2"
+        value={usuarioId ?? ""}
+        onChange={(e) =>
+          selecionarUsuario(e.target.value === "" ? null : Number(e.target.value))
+        }
+      >
+        <option value="">Selecione um usuário</option>
+        {usuarios.map((usuario) => (
+          <option key={usuario.id} value={usuario.id}>
+            {usuario.nome} ({usuario.username})
+          </option>
+        ))}
+      </select>
 
       {usuarioId !== null && (
-        <div>
-          {permissoes.length === 0 && <p>Nenhuma permissão cadastrada.</p>}
+        <fieldset className="mb-4 rounded-md border border-gray-300 p-4">
+          <legend className="px-2 text-sm font-medium text-gray-700">Permissões</legend>
+          {permissoes.length === 0 && <p className="text-gray-500">Nenhuma permissão cadastrada.</p>}
           {permissoes.map((permissao) => (
-            <div key={permissao.id}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={selecionadas.includes(permissao.id)}
-                  onChange={() => alternar(permissao.id)}
-                />{" "}
+            <label key={permissao.id} className="flex items-center gap-2 py-1">
+              <input
+                type="checkbox"
+                checked={selecionadas.includes(permissao.id)}
+                onChange={() => alternar(permissao.id)}
+              />
+              <span>
                 <strong>{permissao.nome}</strong> — {permissao.descricao}
-              </label>
-            </div>
+              </span>
+            </label>
           ))}
-
-          <button onClick={salvar}>Salvar permissões</button>
-          {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
-        </div>
+        </fieldset>
       )}
-    </section>
+
+      <Botao variante="sucesso" onClick={salvar} disabled={usuarioId === null}>
+        Salvar permissões
+      </Botao>
+    </div>
   );
 }
 

@@ -3,6 +3,7 @@ import api, { mensagemErro } from "../services/api";
 import type { Produto } from "../types/Produto";
 import ProdutoForm from "../components/ProdutoForm";
 import ProdutoList from "../components/ProdutoList";
+import { avisoErro, titulo } from "../components/estilos";
 
 function ProdutosPage() {
   const [itens, setItens] = useState<Produto[]>([]);
@@ -48,8 +49,8 @@ function ProdutosPage() {
 
   return (
     <section>
-      <h1>Produtos</h1>
-      {erro && <p style={{ color: "crimson" }}>{erro}</p>}
+      <h1 className={titulo}>Produtos</h1>
+      {erro && <p className={avisoErro}>{erro}</p>}
       <ProdutoForm editando={editando} onSalvar={salvar} onCancelar={() => setEditando(null)} />
       <ProdutoList produtos={itens} onEditar={setEditando} onExcluir={excluir} />
     </section>

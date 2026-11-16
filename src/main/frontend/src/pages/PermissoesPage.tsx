@@ -3,6 +3,7 @@ import api, { mensagemErro } from "../services/api";
 import type { Permissao } from "../types/Permissao";
 import PermissaoForm from "../components/PermissaoForm";
 import PermissaoList from "../components/PermissaoList";
+import { avisoErro, titulo } from "../components/estilos";
 
 function PermissoesPage() {
   const [itens, setItens] = useState<Permissao[]>([]);
@@ -48,8 +49,8 @@ function PermissoesPage() {
 
   return (
     <section>
-      <h1>Permissões</h1>
-      {erro && <p style={{ color: "crimson" }}>{erro}</p>}
+      <h1 className={titulo}>Permissões</h1>
+      {erro && <p className={avisoErro}>{erro}</p>}
       <PermissaoForm editando={editando} onSalvar={salvar} onCancelar={() => setEditando(null)} />
       <PermissaoList permissoes={itens} onEditar={setEditando} onExcluir={excluir} />
     </section>

@@ -1,5 +1,6 @@
 import type { Produto } from "../types/Produto";
 import ProdutoItem from "./ProdutoItem";
+import { lista, listaVazia } from "./estilos";
 
 interface ProdutoListProps {
   produtos: Produto[];
@@ -8,8 +9,12 @@ interface ProdutoListProps {
 }
 
 function ProdutoList({ produtos, onEditar, onExcluir }: ProdutoListProps) {
+  if (produtos.length === 0) {
+    return <p className={listaVazia}>Nenhum produto cadastrado.</p>;
+  }
+
   return (
-    <ul>
+    <ul className={lista}>
       {produtos.map((produto) => (
         <ProdutoItem
           key={produto.id}

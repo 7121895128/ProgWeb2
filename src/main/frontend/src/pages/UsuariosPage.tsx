@@ -3,6 +3,7 @@ import api, { mensagemErro } from "../services/api";
 import type { Usuario, UsuarioDados } from "../types/Usuario";
 import UsuarioForm from "../components/UsuarioForm";
 import UsuarioList from "../components/UsuarioList";
+import { avisoErro, titulo } from "../components/estilos";
 
 function UsuariosPage() {
   const [itens, setItens] = useState<Usuario[]>([]);
@@ -48,8 +49,8 @@ function UsuariosPage() {
 
   return (
     <section>
-      <h1>Usuários cadastrados</h1>
-      {erro && <p style={{ color: "crimson" }}>{erro}</p>}
+      <h1 className={titulo}>Usuários</h1>
+      {erro && <p className={avisoErro}>{erro}</p>}
       <UsuarioForm editando={editando} onSalvar={salvar} onCancelar={() => setEditando(null)} />
       <UsuarioList usuarios={itens} onEditar={setEditando} onExcluir={excluir} />
     </section>

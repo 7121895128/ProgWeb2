@@ -1,5 +1,6 @@
 import type { Permissao } from "../types/Permissao";
 import PermissaoItem from "./PermissaoItem";
+import { lista, listaVazia } from "./estilos";
 
 interface PermissaoListProps {
   permissoes: Permissao[];
@@ -8,8 +9,12 @@ interface PermissaoListProps {
 }
 
 function PermissaoList({ permissoes, onEditar, onExcluir }: PermissaoListProps) {
+  if (permissoes.length === 0) {
+    return <p className={listaVazia}>Nenhuma permissão cadastrada.</p>;
+  }
+
   return (
-    <ul>
+    <ul className={lista}>
       {permissoes.map((permissao) => (
         <PermissaoItem
           key={permissao.id}

@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import type { Permissao } from "../types/Permissao";
+import Botao from "./Botao";
+import { campo, formulario, tituloForm } from "./estilos";
 
 interface PermissaoFormProps {
   editando: Permissao | null;
@@ -26,15 +28,18 @@ function PermissaoForm({ editando, onSalvar, onCancelar }: PermissaoFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome" />
-      <input value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descrição" />
-      <button type="submit">{editando ? "Salvar alterações" : "Cadastrar"}</button>
-      {editando && (
-        <button type="button" onClick={onCancelar}>
-          Cancelar
-        </button>
-      )}
+    <form onSubmit={handleSubmit} className={`${formulario} md:grid-cols-3`}>
+      <h2 className={tituloForm}>{editando ? "Editar permissão" : "Nova permissão"}</h2>
+      <input className={campo} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome" />
+      <input className={campo} value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descrição" />
+      <div className="flex gap-2">
+        <Botao type="submit" className="flex-1">{editando ? "Salvar" : "Cadastrar"}</Botao>
+        {editando && (
+          <Botao type="button" variante="neutro" onClick={onCancelar}>
+            Cancelar
+          </Botao>
+        )}
+      </div>
     </form>
   );
 }

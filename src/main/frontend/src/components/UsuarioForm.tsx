@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import type { Usuario, UsuarioDados } from "../types/Usuario";
+import Botao from "./Botao";
+import { campo, formulario, tituloForm } from "./estilos";
 
 interface UsuarioFormProps {
   editando: Usuario | null;
@@ -13,7 +15,6 @@ function UsuarioForm({ editando, onSalvar, onCancelar }: UsuarioFormProps) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  // Preenche o formulário ao clicar em "Editar" (ou limpa quando cancelar/salvar)
   useEffect(() => {
     setNome(editando?.nome ?? "");
     setUsername(editando?.username ?? "");
@@ -33,22 +34,26 @@ function UsuarioForm({ editando, onSalvar, onCancelar }: UsuarioFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome" />
-      <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" />
+    <form onSubmit={handleSubmit} className={`${formulario} md:grid-cols-5`}>
+      <h2 className={tituloForm}>{editando ? "Editar usuário" : "Novo usuário"}</h2>
+      <input className={campo} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome" />
+      <input className={campo} value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
+      <input className={campo} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" />
       <input
+        className={campo}
         type="password"
         value={senha}
         onChange={(e) => setSenha(e.target.value)}
         placeholder={editando ? "Nova senha (opcional)" : "Senha"}
       />
-      <button type="submit">{editando ? "Salvar alterações" : "Cadastrar"}</button>
-      {editando && (
-        <button type="button" onClick={onCancelar}>
-          Cancelar
-        </button>
-      )}
+      <div className="flex gap-2">
+        <Botao type="submit" className="flex-1">{editando ? "Salvar" : "Cadastrar"}</Botao>
+        {editando && (
+          <Botao type="button" variante="neutro" onClick={onCancelar}>
+            Cancelar
+          </Botao>
+        )}
+      </div>
     </form>
   );
 }

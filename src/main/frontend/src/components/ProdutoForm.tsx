@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import type { Produto } from "../types/Produto";
+import Botao from "./Botao";
+import { campo, formulario, tituloForm } from "./estilos";
 
 interface ProdutoFormProps {
   editando: Produto | null;
@@ -37,17 +39,20 @@ function ProdutoForm({ editando, onSalvar, onCancelar }: ProdutoFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome" />
-      <input value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descrição" />
-      <input type="number" step="0.01" value={preco} onChange={(e) => setPreco(e.target.value)} placeholder="Preço" />
-      <input type="number" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} placeholder="Quantidade" />
-      <button type="submit">{editando ? "Salvar alterações" : "Cadastrar"}</button>
-      {editando && (
-        <button type="button" onClick={onCancelar}>
-          Cancelar
-        </button>
-      )}
+    <form onSubmit={handleSubmit} className={`${formulario} md:grid-cols-5`}>
+      <h2 className={tituloForm}>{editando ? "Editar produto" : "Novo produto"}</h2>
+      <input className={campo} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome" />
+      <input className={campo} value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descrição" />
+      <input className={campo} type="number" step="0.01" value={preco} onChange={(e) => setPreco(e.target.value)} placeholder="Preço" />
+      <input className={campo} type="number" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} placeholder="Estoque" />
+      <div className="flex gap-2">
+        <Botao type="submit" className="flex-1">{editando ? "Salvar" : "Cadastrar"}</Botao>
+        {editando && (
+          <Botao type="button" variante="neutro" onClick={onCancelar}>
+            Cancelar
+          </Botao>
+        )}
+      </div>
     </form>
   );
 }

@@ -8,7 +8,6 @@ export interface Usuario {
   permissoes?: Permissao[];
 }
 
-// A senha só é enviada ao back-end, nunca recebida
 export interface UsuarioDados {
   nome: string;
   username: string;
